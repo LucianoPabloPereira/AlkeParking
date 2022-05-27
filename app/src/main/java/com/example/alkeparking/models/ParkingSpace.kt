@@ -1,7 +1,6 @@
 package com.example.alkeparking.models
 
 import src.main.models.Vehicle
-import java.util.*
 import kotlin.math.ceil
 
 private val FEE_MINIMUM = 120.00
