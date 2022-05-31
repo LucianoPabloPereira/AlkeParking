@@ -1,6 +1,7 @@
 package com.example.alkeparking.models
 
 import src.main.models.Vehicle
+import java.util.*
 import kotlin.math.ceil
 
 private val FEE_MINIMUM = 120.00
@@ -21,8 +22,7 @@ data class ParkingSpace(var vehicle: Vehicle) {
     private fun calculateFee(): Int {
         val hasDiscountCard = vehicle.discountCard?.let { true } ?: false
         var fee = 0
-        parkedTime = 190
-            //((Calendar.getInstance().timeInMillis - vehicle.checkInTime.timeInMillis) / MINUTES_IN_MILISECONDS).toLong()
+        parkedTime = ((Calendar.getInstance().timeInMillis - vehicle.checkInTime.timeInMillis) / MINUTES_IN_MILISECONDS).toLong()
         if (parkedTime <= FEE_MINIMUM) {
             fee = vehicle.type.amount
         } else {
