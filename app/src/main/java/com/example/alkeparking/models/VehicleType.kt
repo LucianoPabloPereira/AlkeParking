@@ -1,5 +1,6 @@
 package com.example.alkeparking.models
 
+//The vehicle type will not change so it is set to constant.
 enum class VehicleType(val amount: Int){
     CAR(20),
     MOTORCYCLE(15),
