@@ -1,47 +1,53 @@
 package com.example.alkeparking.models
 
-import src.main.models.Vehicle
+import com.example.alkeparking.utils.AlkeparkingConstants.Companion.FEE_DISCOUNTED_PERCENTAGE
+import com.example.alkeparking.utils.AlkeparkingConstants.Companion.FEE_EXCESS_AMOUNT_PER_TIME
+import com.example.alkeparking.utils.AlkeparkingConstants.Companion.FEE_EXCESS_TIME
+import com.example.alkeparking.utils.AlkeparkingConstants.Companion.FEE_MINIMUM_TIME
+import com.example.alkeparking.utils.AlkeparkingConstants.Companion.MESSAGE_ERROR_CHECKOUT
+import com.example.alkeparking.utils.AlkeparkingConstants.Companion.MINUTES_IN_MILLISECONDS
 import java.util.*
 import kotlin.math.ceil
 
-private val FEE_MINIMUM = 120.00
-private val FEE_EXCESS = 15.00
-private val MINUTES_IN_MILISECONDS = 60000.00
-
-
 data class ParkingSpace(var vehicle: Vehicle) {
 
-    var parkedTime: Long = 0
-
-    fun checkOutVehicle(plate: String) : Int {
+    fun checkOutVehicle() : Int {
         val spaceFee = calculateFee()
         onSuccess(spaceFee)
         return spaceFee
     }
 
+    // Calculate and return the fee value
     private fun calculateFee(): Int {
         val hasDiscountCard = vehicle.discountCard?.let { true } ?: false
+        val parkedTime = getParkedTime()
         var fee = 0
-        parkedTime = ((Calendar.getInstance().timeInMillis - vehicle.checkInTime.timeInMillis) / MINUTES_IN_MILISECONDS).toLong()
-        if (parkedTime <= FEE_MINIMUM) {
+
+        if (parkedTime <= FEE_MINIMUM_TIME) {
             fee = vehicle.type.amount
         } else {
             fee = vehicle.type.amount
-            val otherTime = ceil(((parkedTime - FEE_MINIMUM) / FEE_EXCESS)).toInt()
-            fee += otherTime * 5
+            val otherTime = ceil(((parkedTime - FEE_MINIMUM_TIME) / FEE_EXCESS_TIME)).toInt()
+            fee += otherTime * FEE_EXCESS_AMOUNT_PER_TIME
         }
 
         return calculateDiscount(hasDiscountCard, fee)
     }
 
-    private fun calculateDiscount(hasDiscountCard: Boolean, fee: Int): Int =
-        if (hasDiscountCard) ceil(fee - (fee * 0.15)).toInt() else fee
+    private fun getParkedTime() =
+        ((Calendar.getInstance().timeInMillis - vehicle.checkInTime.timeInMillis) / MINUTES_IN_MILLISECONDS).toLong()
 
-    private fun onSuccess(amount: Int) {
-        println("Your fee is $amount Come back soon.")
+    // Calculate discounted value of fee if client has a discount card
+    private fun calculateDiscount(hasDiscountCard: Boolean, fee: Int): Int =
+        if (hasDiscountCard) ceil(fee * FEE_DISCOUNTED_PERCENTAGE).toInt() else fee
+
+    // Prints the checkout message with the fee amount to pay
+    private fun onSuccess(fee: Int) {
+        println("Your fee is $fee Come back soon.")
     }
 
+    // Prints an error message when a vehicle couldn´t be removed
     fun onError() {
-        println("Sorry, the check-out failed")
+        println(MESSAGE_ERROR_CHECKOUT)
     }
 }

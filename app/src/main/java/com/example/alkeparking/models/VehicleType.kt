@@ -1,4 +1,4 @@
-package src.main.models
+package com.example.alkeparking.models
 
 enum class VehicleType(val amount: Int){
     CAR(20),

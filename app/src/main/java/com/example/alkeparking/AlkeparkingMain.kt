@@ -1,8 +1,8 @@
 package com.example.alkeparking
 
-import src.main.models.Parking
-import src.main.models.Vehicle
-import src.main.models.VehicleType
+import com.example.alkeparking.models.Parking
+import com.example.alkeparking.models.Vehicle
+import com.example.alkeparking.models.VehicleType
 
 fun main() {
     val parking = Parking(mutableSetOf<Vehicle>())
@@ -16,12 +16,12 @@ fun main() {
         remove(vehicleList[12])
         remove(vehicleList[2])
 
-        getBalanceInformation()
+        printBalanceInformation()
         listVehicles()
     }
 }
 
-fun getSampleList() = listOf<Vehicle>(
+fun getSampleList() = listOf(
     Vehicle("AA111AA", VehicleType.CAR, discountCard = "DISCOUNT_CARD_001"),
     Vehicle("AA111AA", VehicleType.CAR),
     Vehicle("BB222BB", VehicleType.MOTORCYCLE),

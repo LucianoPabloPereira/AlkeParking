@@ -1,6 +1,8 @@
-package src.main.models
+package com.example.alkeparking.models
 
-import com.example.alkeparking.models.ParkingSpace
+import com.example.alkeparking.utils.AlkeparkingConstants.Companion.MESSAGE_ERROR_CHECK_IN
+import com.example.alkeparking.utils.AlkeparkingConstants.Companion.MESSAGE_WELCOME
+import com.example.alkeparking.utils.AlkeparkingConstants.Companion.PARKING_SPACE_LIMIT
 
 data class Parking(val vehicles: MutableSet<Vehicle>) {
 
@@ -8,38 +10,42 @@ data class Parking(val vehicles: MutableSet<Vehicle>) {
     private var totalEarning = 0
     private var totalVehiclesCheckedOut = 0
 
-    fun addVehicle(vehicle: Vehicle) : Boolean {
+    // Add a single vehicle object to parking list if is there any place available.
+    fun addVehicle(vehicle: Vehicle): Boolean {
         return if (vehicles.size < PARKING_SPACE_LIMIT) vehicles.add(vehicle) else false
     }
 
+    // Add multiple vehicles
     fun addVehicleList(vehicles: List<Vehicle>) {
         vehicles.forEach {
-            if (addVehicle(it)) println(MESSAGE_WELCOME) else println(MESSAGE_ERROR_CHECKIN)
+            if (addVehicle(it)) println(MESSAGE_WELCOME) else println(MESSAGE_ERROR_CHECK_IN)
         }
     }
 
-    fun remove(vehicle: Vehicle){
+    // Removes vehicle from Parking list
+    fun remove(vehicle: Vehicle) {
         val parkingSpace = ParkingSpace(vehicle)
         val vehicleToRemove = vehicles.find { it.plate == vehicle.plate }
         vehicleToRemove?.let {
-            totalEarning += parkingSpace.checkOutVehicle(vehicle.plate)
-            totalVehiclesCheckedOut++
-            parkingInformation = Pair(totalEarning, totalVehiclesCheckedOut)
+            setBalanceInformation(parkingSpace.checkOutVehicle())
             vehicles.remove(vehicleToRemove)
         } ?: parkingSpace.onError()
     }
 
+    // Print a list with all vehicle plates actually inside Parking
     fun listVehicles() {
         vehicles.map { println(it.plate) }
     }
 
-    fun getBalanceInformation() {
+    // Prints information about the total number of registered cars and the total profit obtained.
+    fun printBalanceInformation() {
         println("${parkingInformation.second} vehicles have checked out and have earnings of $${parkingInformation.first}")
     }
 
-    companion object {
-        const val PARKING_SPACE_LIMIT = 20
-        const val MESSAGE_WELCOME = "Welcome to AlkeParking!"
-        const val MESSAGE_ERROR_CHECKIN = "Sorry, the check-in has failed"
+    // Sets total values for total balance and number of registered vehicles to parkingInformation Pair
+    private fun setBalanceInformation(checkOutVehicle: Int) {
+        totalEarning += checkOutVehicle
+        totalVehiclesCheckedOut++
+        parkingInformation = Pair(totalEarning, totalVehiclesCheckedOut)
     }
 }
