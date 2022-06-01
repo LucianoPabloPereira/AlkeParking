@@ -21,12 +21,9 @@ data class ParkingSpace(var vehicle: Vehicle) {
     private fun calculateFee(): Int {
         val hasDiscountCard = vehicle.discountCard?.let { true } ?: false
         val parkedTime = getParkedTime()
-        var fee = 0
+        var fee = vehicle.type.amount
 
-        if (parkedTime <= FEE_MINIMUM_TIME) {
-            fee = vehicle.type.amount
-        } else {
-            fee = vehicle.type.amount
+        if (parkedTime > FEE_MINIMUM_TIME) {
             val otherTime = ceil(((parkedTime - FEE_MINIMUM_TIME) / FEE_EXCESS_TIME)).toInt()
             fee += otherTime * FEE_EXCESS_AMOUNT_PER_TIME
         }
